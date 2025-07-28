@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title> 💭 Sentiment Insights – Live Data</title>
+  <title> 💭 Subreddit  – Live Data</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>💭 Sentiment Insights — Live Data</h1>
+  <h1>💭 Subreddit — API /h1>
 
   <div class="control-panel">
     <label for="startDate">Start Date:</label>
@@ -21,7 +21,7 @@
   <div id="loading">🔄 Loading data...</div>
 
   <div class="section">
-    <div class="section-header">🏆 Subreddit Uplift Ranking (Top 10 Most Positive Subreddits)</div>
+    <div class="section-header"> Subreddit Ranking (Top 50 Scored Subreddits Posts)</div>
     <table id="subredditTable">
       <thead>
         <tr><th>Subreddit</th><th>Comments</th><th>Avg Polarity</th></tr>
@@ -98,12 +98,15 @@
   'warns', 'crash', 'struggles', 'falls', 'controversy', 'outrage', 'disaster',
   'accused', 'backlash', 'threat', 'blockage', 'controversial','warn','fears',
   'israeli','kill', 'attack', 'virus','killed','malnourishment', 'starvation',
-  'starved','wildfires','kills','chaotic','desperately','hungry','hunger','famine'
+  'starved','wildfires','kills','chaotic','desperately','hungry','hunger','famine','starving',
+      'starvation','starved','heartbreaking', 'stabbed'
     ];
 
     const contrastWords = ['but', 'however', 'although'];
     const negativePhrases = [
-      "don't", "can't", "won't", "shouldn't", "give up", "hate myself", "suicide", "trauma"
+      "don't", "can't", "won't", "shouldn't", "give up", "hate myself", "suicide", "trauma",
+      "trapped in Gaza", "trapped in", "child abuse", "Child abuse", "mass shooting",
+      "mass starvation", "mass killing"
     ];
 
     const NEGATIVE_WEIGHT = 2;
