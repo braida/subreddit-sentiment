@@ -32,7 +32,7 @@
 
   <div class="section">
     <div class="section-header">📊 Sentiment Table</div>
-    <p>Top 30 Uplifting Posts</p>
+    <p>Most Recent Posts</p>
     <table id="sentimentTable">
       <thead>
         <tr>
@@ -176,7 +176,7 @@
           const dateStr = postDate.toISOString().split('T')[0];
 
           
-            upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
+           upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id, created_utc });
           
 
           if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
@@ -192,7 +192,7 @@
       }
     }
 
-    upliftingPosts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+    upliftingPosts.sort((a, b) => b.created_utc - a.created_utc);
     upliftingPosts.slice(0, 50).forEach((post, i) => {
       const row = document.createElement("tr");
       row.classList.add('uplifting');
