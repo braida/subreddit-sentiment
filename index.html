@@ -170,7 +170,8 @@
             <td>${i + 1}</td>
             <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
             <td>${post.title}</td>
-            <td>${Number(post.sentimentScore).toFixed(2) || 'N/A'}</td>
+            
+            <td>${item.sentimentScore.toFixed(2)}</td>
             <td>${post.emotion}</td>
             <td>${post.date}</td>
             <td>
