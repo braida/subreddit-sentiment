@@ -32,7 +32,7 @@
 
   <div class="section">
     <div class="section-header">📊 Sentiment Table</div>
-    <p>Most Recent Posts</p>
+    <p>Top 30 Uplifting Posts</p>
     <table id="sentimentTable">
       <thead>
         <tr>
@@ -162,7 +162,7 @@
 
     for (let subreddit of popularSubreddits) {
       try {
-        const response = await fetch(`/api/reddit/${subreddit}`);
+        const response = await fetch(`https://www.reddit.com/r/${subreddit}/new.json?limit=50`);
         const posts = (await response.json()).data.children;
 
         posts.forEach(post => {
@@ -176,7 +176,7 @@
           const dateStr = postDate.toISOString().split('T')[0];
 
           
-           upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id, created_utc });
+            upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
           
 
           if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
@@ -192,7 +192,7 @@
       }
     }
 
-    upliftingPosts.sort((a, b) => b.created_utc - a.created_utc);
+    upliftingPosts.sort((a, b) => b.sentimentScore - a.sentimentScore);
     upliftingPosts.slice(0, 50).forEach((post, i) => {
       const row = document.createElement("tr");
       row.classList.add('uplifting');
@@ -248,39 +248,7 @@
   document.getElementById("startDate").value = getDefaultStartDate();
   document.getElementById("endDate").value = getTodayDate();
   applyDateRange();
-
- </script>
-  
-
-
-  <script> // \(**)/ 
-document.addEventListener('keydown', e => {
-  if (e.key.toLowerCase() === 'c') {
-    for (let i = 0; i < 30; i++) {
-      let cat = document.createElement('div');
-      cat.innerHTML = '🐱';
-      cat.style.position = 'fixed';
-      cat.style.left = Math.random() * window.innerWidth + 'px';
-      cat.style.top = '-50px';
-      cat.style.fontSize = '2em';
-      cat.style.animation = 'fall 3s linear infinite';
-      document.body.appendChild(cat);
-
-      setTimeout(() => cat.remove(), 3000);
-    }
-  }
-});
-</script> 
-
-<style>
-@keyframes fall {
-  to { transform: translateY(100vh); opacity: 0; }
-}
-</style> 
-
-
- 
- 
+</script>
 
 </body>
 </html>
