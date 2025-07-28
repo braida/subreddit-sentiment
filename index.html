@@ -224,6 +224,38 @@
         margin: { t: 50 }
       });
     }
+    function generateWordCloud(posts) {
+  const wordCounts = {};
+
+  // Basic word frequency count
+  posts.forEach(post => {
+    const text = (post.title + ' ' + (post.postText || '')).toLowerCase();
+    const words = text.match(/\b\w{4,}\b/g); // only words with 4+ letters
+
+    if (words) {
+      words.forEach(word => {
+        wordCounts[word] = (wordCounts[word] || 0) + 1;
+      });
+    }
+  });
+
+  const entries = Object.entries(wordCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 100); // top 100 words
+
+  const wordList = entries.map(([word, count]) => [word, count]);
+
+  WordCloud(document.getElementById('wordCloud'), {
+    list: wordList,
+    gridSize: 8,
+    weightFactor: 4,
+    fontFamily: 'Verdana',
+    color: 'random-dark',
+    rotateRatio: 0.5,
+    backgroundColor: '#f9f9f9'
+  });
+}
+
   </script>
 </body>
 </html>
