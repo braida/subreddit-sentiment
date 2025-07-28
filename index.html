@@ -248,7 +248,39 @@
   document.getElementById("startDate").value = getDefaultStartDate();
   document.getElementById("endDate").value = getTodayDate();
   applyDateRange();
-</script>
+
+ </script>
+  
+
+
+  <script> // \(**)/ 
+document.addEventListener('keydown', e => {
+  if (e.key.toLowerCase() === 'c') {
+    for (let i = 0; i < 30; i++) {
+      let cat = document.createElement('div');
+      cat.innerHTML = '🐱';
+      cat.style.position = 'fixed';
+      cat.style.left = Math.random() * window.innerWidth + 'px';
+      cat.style.top = '-50px';
+      cat.style.fontSize = '2em';
+      cat.style.animation = 'fall 3s linear infinite';
+      document.body.appendChild(cat);
+
+      setTimeout(() => cat.remove(), 3000);
+    }
+  }
+});
+</script> 
+
+<style>
+@keyframes fall {
+  to { transform: translateY(100vh); opacity: 0; }
+}
+</style> 
+
+
+ 
+ 
 
 </body>
 </html>
