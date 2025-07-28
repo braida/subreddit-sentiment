@@ -108,10 +108,13 @@
     fetchRedditData(start, end);
   }
 
-  function toggleDetails(index) {
-    const detailsRow = document.querySelectorAll("#sentimentTable tbody .details")[index];
+  function toggleDetails(postId) {
+  const detailsRow = document.querySelector(`#sentimentTable tbody .details[data-post-id="${postId}"]`);
+  if (detailsRow) {
     detailsRow.style.display = detailsRow.style.display === "table-row" ? "none" : "table-row";
   }
+}
+
 
   function getSentimentScore(text) {
     const positiveWords = [
@@ -232,6 +235,13 @@
       const row = document.createElement("tr");
       row.classList.add('uplifting');
       const postId = `post-${post.id}`;
+
+row.setAttribute('data-post-id', postId);
+details.setAttribute('data-post-id', postId);
+details.classList.add('details');
+details.style.display = 'none'; // Ensure initially hidden
+
+const postId = `post-${post.id}`;
 
 row.setAttribute('data-post-id', postId);
 details.setAttribute('data-post-id', postId);
