@@ -219,9 +219,9 @@
     });
 
     const sorted = Object.entries(subredditStats).sort(([, a], [, b]) =>
-      (b.totalPolarity / b.count) - (a.totalPolarity / a.count)
-    );
-    sorted.slice(0, 20).forEach(([name, stats]) => {
+  b.count - a.count
+);
+    sorted.slice(0, 50).forEach(([name, stats]) => {
       const avg = stats.totalPolarity / stats.count;
       const row = document.createElement("tr");
       row.innerHTML = `<td><a href="https://www.reddit.com/r/${name}" target="_blank">${name}</a></td>
