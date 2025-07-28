@@ -21,7 +21,7 @@
   <div id="loading">🔄 Loading data...</div>
 
   <div class="section">
-    <div class="section-header"> Subreddit Ranking (Top 50 Scored Subreddits Posts)</div>
+    <div class="section-header"> Subreddit Ranking (Top 10 Scored Subreddits)</div>
     <table id="subredditTable">
       <thead>
         <tr><th>Subreddit</th><th>Comments</th><th>Avg Polarity</th></tr>
@@ -58,29 +58,34 @@
  <script>
    let ascending = true;
 
- document.getElementById('dateHeader').addEventListener('click', () => {
-  const table = document.getElementById('sentimentTable');
-  const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr')).filter((_, i) => i % 2 === 0); // Only main rows
+  document.getElementById('dateHeader').addEventListener('click', () => {
+    const tbody = document.querySelector('#sentimentTable tbody');
+    const allRows = Array.from(tbody.querySelectorAll('tr'));
 
-  rows.sort((a, b) => {
-    const dateA = new Date(a.children[5].textContent.trim());
-    const dateB = new Date(b.children[5].textContent.trim());
-    return ascending ? dateA - dateB : dateB - dateA;
-  });
-
-  // Rebuild the table with details rows in order
-  tbody.innerHTML = '';
-  rows.forEach((mainRow, i) => {
-    const detailsRow = document.querySelectorAll("#sentimentTable tbody .details")[i];
-    tbody.appendChild(mainRow);
-    if (detailsRow) {
-      tbody.appendChild(detailsRow);
+    // Group main + details rows together
+    const pairedRows = [];
+    for (let i = 0; i < allRows.length; i += 2) {
+      const mainRow = allRows[i];
+      const detailRow = allRows[i + 1];
+      pairedRows.push([mainRow, detailRow]);
     }
-  });
 
-  ascending = !ascending;
-});
+    // Sort pairs by the date in the main row (6th column)
+    pairedRows.sort(([rowA], [rowB]) => {
+      const dateA = new Date(rowA.children[5].textContent.trim());
+      const dateB = new Date(rowB.children[5].textContent.trim());
+      return ascending ? dateA - dateB : dateB - dateA;
+    });
+
+    // Clear and re-append sorted rows
+    tbody.innerHTML = '';
+    pairedRows.forEach(([main, detail]) => {
+      tbody.appendChild(main);
+      if (detail) tbody.appendChild(detail);
+    });
+
+    ascending = !ascending;
+  });
 
 
   const popularSubreddits = ['news', 'Palestine', 'mentalhealth', 'work','ireland','tech','IRL','TLdR','askreddit','worldnews',
