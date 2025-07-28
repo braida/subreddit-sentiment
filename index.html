@@ -32,7 +32,7 @@
 
   <div class="section">
     <div class="section-header">📊 Sentiment Table</div>
-    <p>Top 30 Uplifting Posts</p>
+    <p>Top 50 Most Scored Posts</p>
     <table id="sentimentTable">
       <thead>
         <tr>
@@ -41,7 +41,7 @@
           <th>Title</th>
           <th>Polarity</th>
           <th>Emotion</th>
-          <th id="dateHeader">Date ▲▼</th>
+          <th id="dateHeader" style="cursor: pointer;">Date ▲▼</th>
           <th>Actions</th>
           <th>Details</th>
         </tr>
@@ -58,24 +58,31 @@
  <script>
    let ascending = true;
 
-  document.getElementById('dateHeader').addEventListener('click', () => {
-    const table = document.getElementById('sentimentTable');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
+ document.getElementById('dateHeader').addEventListener('click', () => {
+  const table = document.getElementById('sentimentTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr')).filter((_, i) => i % 2 === 0); // Only main rows
 
-    rows.sort((rowA, rowB) => {
-      const dateA = new Date(rowA.children[5].textContent.trim());
-      const dateB = new Date(rowB.children[5].textContent.trim());
-      return ascending ? dateA - dateB : dateB - dateA;
-    });
-
-    // Clear and re-add sorted rows
-    tbody.innerHTML = '';
-    rows.forEach(row => tbody.appendChild(row));
-
-    // Toggle sort direction
-    ascending = !ascending;
+  rows.sort((a, b) => {
+    const dateA = new Date(a.children[5].textContent.trim());
+    const dateB = new Date(b.children[5].textContent.trim());
+    return ascending ? dateA - dateB : dateB - dateA;
   });
+
+  // Rebuild the table with details rows in order
+  tbody.innerHTML = '';
+  rows.forEach((mainRow, i) => {
+    const detailsRow = document.querySelectorAll("#sentimentTable tbody .details")[i];
+    tbody.appendChild(mainRow);
+    if (detailsRow) {
+      tbody.appendChild(detailsRow);
+    }
+  });
+
+  ascending = !ascending;
+});
+
+
   const popularSubreddits = ['news', 'Palestine', 'mentalhealth', 'work','ireland','tech','IRL','TLdR','askreddit','worldnews',
                             'funny'];
 
