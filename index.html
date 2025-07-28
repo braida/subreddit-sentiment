@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💭 Subreddit — Live Data</title>
+  <title>💭 Subreddit — API</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -55,7 +55,6 @@
     <div id="lineGraph" style="height:400px;"></div>
   </div>
 
-  <!-- Inline JavaScript -->
   <script>
     let ascending = true;
 
@@ -94,25 +93,18 @@
       fetchRedditData(start, end);
     }
 
-    function toggleDetails(postId) {
-      const detailsRow = document.querySelector(`.details[data-post-id="${postId}"]`);
-      if (detailsRow) {
-        detailsRow.style.display = detailsRow.style.display === "table-row" ? "none" : "table-row";
-      }
-    }
-
     function sortByDate() {
       const tbody = document.querySelector('#sentimentTableBody');
       const allRows = Array.from(tbody.querySelectorAll('tr'));
-
       const pairedRows = [];
+
       for (let i = 0; i < allRows.length; i += 2) {
         pairedRows.push([allRows[i], allRows[i + 1]]);
       }
 
-      pairedRows.sort(([rowA], [rowB]) => {
-        const dateA = new Date(rowA.children[5].textContent.trim());
-        const dateB = new Date(rowB.children[5].textContent.trim());
+      pairedRows.sort(([a], [b]) => {
+        const dateA = new Date(a.children[5].textContent.trim());
+        const dateB = new Date(b.children[5].textContent.trim());
         return ascending ? dateA - dateB : dateB - dateA;
       });
 
@@ -125,69 +117,82 @@
       ascending = !ascending;
     }
 
+    function toggleDetails(postId) {
+      const row = document.querySelector(`.details[data-post-id="${postId}"]`);
+      if (row) {
+        row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+      }
+    }
+
     async function fetchRedditData(start, end) {
       document.getElementById("loading").style.display = 'block';
 
-      const response = await fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          startDate: start.toISOString(),
-          endDate: end.toISOString()
-        })
-      });
+      try {
+        const response = await fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            startDate: start.toISOString(),
+            endDate: end.toISOString()
+          })
+        });
 
-      const { posts, subredditStats, dateStats } = await response.json();
+        const { posts, subredditStats, dateStats } = await response.json();
 
-      const subredditTableBody = document.getElementById("subredditTableBody");
-      const sentimentTableBody = document.getElementById("sentimentTableBody");
-      subredditTableBody.innerHTML = '';
-      sentimentTableBody.innerHTML = '';
+        const subredditTableBody = document.getElementById("subredditTableBody");
+        const sentimentTableBody = document.getElementById("sentimentTableBody");
+        subredditTableBody.innerHTML = '';
+        sentimentTableBody.innerHTML = '';
 
-      posts.sort((a, b) => b.sentimentScore - a.sentimentScore);
-      posts.slice(0, 50).forEach((post, i) => {
-        const row = document.createElement("tr");
-        const details = document.createElement("tr");
-        const postId = `post-${post.id}`;
+        posts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+        posts.slice(0, 50).forEach((post, i) => {
+          const row = document.createElement("tr");
+          const details = document.createElement("tr");
+          const postId = `post-${post.id}`;
 
-        row.setAttribute('data-post-id', postId);
-        details.setAttribute('data-post-id', postId);
-        details.classList.add('details');
-        details.style.display = 'none';
+          row.setAttribute('data-post-id', postId);
+          details.setAttribute('data-post-id', postId);
+          details.classList.add('details');
+          details.style.display = 'none';
 
-        row.innerHTML = `
-          <td>${i + 1}</td>
-          <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
-          <td>${post.title}</td>
-          <td>${post.sentimentScore.toFixed(2)}</td>
-          <td>${post.emotion}</td>
-          <td>${post.date}</td>
-          <td>
-            <button class="btn" onclick="alert('Boosted!')">👍</button>
-            <button class="btn" onclick="alert('Flagged!')">🚩</button>
-          </td>
-          <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
-        `;
+          row.innerHTML = `
+            <td>${i + 1}</td>
+            <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
+            <td>${post.title}</td>
+            <td>${post.sentimentScore.toFixed(2)}</td>
+            <td>${post.emotion}</td>
+            <td>${post.date}</td>
+            <td>
+              <button class="btn" onclick="alert('Boosted!')">👍</button>
+              <button class="btn" onclick="alert('Flagged!')">🚩</button>
+            </td>
+            <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
+          `;
 
-        details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText || 'No content available.'}</td>`;
+          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText || 'No content available.'}</td>`;
 
-        sentimentTableBody.appendChild(row);
-        sentimentTableBody.appendChild(details);
-      });
+          sentimentTableBody.appendChild(row);
+          sentimentTableBody.appendChild(details);
+        });
 
-      const sorted = Object.entries(subredditStats).sort(([, a], [, b]) => b.count - a.count);
-      sorted.slice(0, 50).forEach(([name, stats]) => {
-        const avg = stats.totalPolarity / stats.count;
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><a href="https://www.reddit.com/r/${name}" target="_blank">${name}</a></td>
-          <td>${stats.count}</td>
-          <td>${avg.toFixed(2)}</td>
-        `;
-        subredditTableBody.appendChild(row);
-      });
+        const sorted = Object.entries(subredditStats).sort(([, a], [, b]) => b.count - a.count);
+        sorted.slice(0, 10).forEach(([name, stats]) => {
+          const avg = stats.totalPolarity / stats.count;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><a href="https://www.reddit.com/r/${name}" target="_blank">${name}</a></td>
+            <td>${stats.count}</td>
+            <td>${avg.toFixed(2)}</td>
+          `;
+          subredditTableBody.appendChild(row);
+        });
 
-      plotLineGraph(dateStats);
+        plotLineGraph(dateStats);
+
+      } catch (err) {
+        console.error('❌ Failed to fetch data:', err);
+      }
+
       document.getElementById("loading").style.display = 'none';
     }
 
