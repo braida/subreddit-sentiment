@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title> 💭 Subreddit  – Live Data</title>
+  <title>💭 Subreddit – Live Data</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>💭 Subreddit — API </h1>
+  <h1>💭 Subreddit — API</h1>
 
   <div class="control-panel">
     <label for="startDate">Start Date:</label>
@@ -21,7 +21,7 @@
   <div id="loading">🔄 Loading data...</div>
 
   <div class="section">
-    <div class="section-header"> Subreddit Ranking (Top 10 Scored Subreddits)</div>
+    <div class="section-header">Subreddit Ranking (Top 10 Scored Subreddits)</div>
     <table id="subredditTable">
       <thead>
         <tr><th>Subreddit</th><th>Comments</th><th>Avg Polarity</th></tr>
@@ -55,14 +55,14 @@
     <div id="lineGraph" style="height:400px;"></div>
   </div>
 
- <script>
-   let ascending = true;
-
+<script>
+  let ascending = true;
+   const popularSubreddits = ['news', 'Palestine', 'mentalhealth', 'work','ireland','tech','IRL','TLdR','askreddit','worldnews',
+                            'funny'];
   document.getElementById('dateHeader').addEventListener('click', () => {
     const tbody = document.querySelector('#sentimentTable tbody');
     const allRows = Array.from(tbody.querySelectorAll('tr'));
 
-    // Group main + details rows together
     const pairedRows = [];
     for (let i = 0; i < allRows.length; i += 2) {
       const mainRow = allRows[i];
@@ -70,14 +70,12 @@
       pairedRows.push([mainRow, detailRow]);
     }
 
-    // Sort pairs by the date in the main row (6th column)
     pairedRows.sort(([rowA], [rowB]) => {
       const dateA = new Date(rowA.children[5].textContent.trim());
       const dateB = new Date(rowB.children[5].textContent.trim());
       return ascending ? dateA - dateB : dateB - dateA;
     });
 
-    // Clear and re-append sorted rows
     tbody.innerHTML = '';
     pairedRows.forEach(([main, detail]) => {
       tbody.appendChild(main);
@@ -86,10 +84,6 @@
 
     ascending = !ascending;
   });
-
-
-  const popularSubreddits = ['news', 'Palestine', 'mentalhealth', 'work','ireland','tech','IRL','TLdR','askreddit','worldnews',
-                            'funny'];
 
   function getTodayDate() {
     const today = new Date();
@@ -103,18 +97,28 @@
   }
 
   function applyDateRange() {
-    const start = new Date(document.getElementById("startDate").value);
-    const end = new Date(document.getElementById("endDate").value);
+    const startInput = document.getElementById("startDate").value;
+    const endInput = document.getElementById("endDate").value;
+
+    if (!startInput || !endInput) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+
+    const start = new Date(startInput);
+    const end = new Date(endInput);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
     fetchRedditData(start, end);
   }
 
   function toggleDetails(postId) {
-  const detailsRow = document.querySelector(`#sentimentTable tbody .details[data-post-id="${postId}"]`);
-  if (detailsRow) {
-    detailsRow.style.display = detailsRow.style.display === "table-row" ? "none" : "table-row";
+    const detailsRow = document.querySelector(`#sentimentTable tbody .details[data-post-id="${postId}"]`);
+    if (detailsRow) {
+      detailsRow.style.display = detailsRow.style.display === "table-row" ? "none" : "table-row";
+    }
   }
-}
-
 
   function getSentimentScore(text) {
     const positiveWords = [
@@ -122,7 +126,6 @@
       'amazing', 'proud', 'confident', 'hopeful', 'great', 'cheerful', 'uplifted',
       'accomplished', 'peaceful', 'motivated', 'encouraged', 'better', 'progress', 'good life'
     ];
-
     const negativeWords = [
       'sad', 'angry', 'hate', 'depressed','deadly','dead', 'frustrated', 'hopeless', 'anxious',
   'scared', 'tired', 'lonely', 'miserable', 'worthless', 'failure', 'afraid',
@@ -136,7 +139,6 @@
   'starved','wildfires','kills','chaotic','desperately','hungry','hunger','famine','starving',
       'starvation','starved','heartbreaking', 'stabbed'
     ];
-
     const contrastWords = ['but', 'however', 'although'];
     const negativePhrases = [
       "don't", "can't", "won't", "shouldn't", "give up", "hate myself", "suicide", "trauma",
@@ -189,6 +191,7 @@
 
   async function fetchRedditData(startDate, endDate) {
     document.getElementById("loading").style.display = 'block';
+
     const subredditStats = {};
     const dateStats = {};
     const upliftingPosts = [];
@@ -213,9 +216,7 @@
           const emotion = sentimentScore > 0 ? 'UpBeat' : sentimentScore < 0 ? 'DownBeat' : 'Neutral';
           const dateStr = postDate.toISOString().split('T')[0];
 
-          
-            upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
-          
+          upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
 
           if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
           subredditStats[subreddit].count++;
@@ -231,46 +232,39 @@
     }
 
     upliftingPosts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+
     upliftingPosts.slice(0, 50).forEach((post, i) => {
       const row = document.createElement("tr");
-      row.classList.add('uplifting');
+      const details = document.createElement("tr");
+
       const postId = `post-${post.id}`;
 
-row.setAttribute('data-post-id', postId);
-details.setAttribute('data-post-id', postId);
-details.classList.add('details');
-details.style.display = 'none'; // Ensure initially hidden
+      row.setAttribute('data-post-id', postId);
+      details.setAttribute('data-post-id', postId);
+      details.classList.add('details');
+      details.style.display = 'none';
 
-const postId = `post-${post.id}`;
+      row.innerHTML = `
+        <td>${i + 1}</td>
+        <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
+        <td>${post.title}</td>
+        <td>${post.sentimentScore.toFixed(2)}</td>
+        <td>${post.emotion}</td>
+        <td>${post.date}</td>
+        <td>
+          <button class="btn" onclick="alert('Boosted!')">👍</button>
+          <button class="btn" onclick="alert('Flagged!')">🚩</button>
+        </td>
+        <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
+      `;
 
-row.setAttribute('data-post-id', postId);
-details.setAttribute('data-post-id', postId);
-details.classList.add('details');
-details.style.display = 'none'; // Ensure initially hidden
-
-row.innerHTML = `
-  <td>${i + 1}</td>
-  <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
-  <td>${post.title}</td>
-  <td>${post.sentimentScore.toFixed(2)}</td>
-  <td>${post.emotion}</td>
-  <td>${post.date}</td>
-  <td>
-    <button class="btn" onclick="alert('Boosted!')">👍</button>
-    <button class="btn" onclick="alert('Flagged!')">🚩</button>
-  </td>
-  <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
-`;
-
-details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText || 'No content available.'}</td>`;
+      details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText || 'No content available.'}</td>`;
 
       sentimentTableBody.appendChild(row);
       sentimentTableBody.appendChild(details);
     });
 
-    const sorted = Object.entries(subredditStats).sort(([, a], [, b]) =>
-  b.count - a.count
-);
+    const sorted = Object.entries(subredditStats).sort(([, a], [, b]) => b.count - a.count);
     sorted.slice(0, 50).forEach(([name, stats]) => {
       const avg = stats.totalPolarity / stats.count;
       const row = document.createElement("tr");
@@ -290,11 +284,13 @@ details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText
       x: dates, y: avgPolarity, mode: 'lines+markers',
       line: { color: 'mediumseagreen' }
     }], {
-      xaxis: { title: 'Date' }, yaxis: { title: 'Avg Polarity', range: [-1, 1] },
+      xaxis: { title: 'Date' },
+      yaxis: { title: 'Avg Polarity', range: [-1, 1] },
       margin: { t: 50 }
     });
   }
 
+  // Initialize date inputs and fetch data on load
   document.getElementById("startDate").value = getDefaultStartDate();
   document.getElementById("endDate").value = getTodayDate();
   applyDateRange();
