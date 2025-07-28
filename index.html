@@ -172,12 +172,12 @@
 
           const content = `${title} ${selftext}`;
           const sentimentScore = getSentimentScore(content);
-          const emotion = sentimentScore > 0 ? 'Positive' : sentimentScore < 0 ? 'Negative' : 'Neutral';
+          const emotion = sentimentScore > 0 ? 'UpBeat' : sentimentScore < 0 ? 'DownBeat' : 'Neutral';
           const dateStr = postDate.toISOString().split('T')[0];
 
-          if (sentimentScore > 0) {
+          
             upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
-          }
+          
 
           if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
           subredditStats[subreddit].count++;
