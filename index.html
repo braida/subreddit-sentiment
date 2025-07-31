@@ -181,7 +181,7 @@
             <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
           `;
 
-          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.subreddit || 'No content available.'}</td>`;
+          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.details || 'No content available.'}</td>`;
 
           sentimentTableBody.appendChild(row);
           sentimentTableBody.appendChild(details);
