@@ -67,9 +67,9 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 // Example: simple route to check server status
-app.get('/', (req, res) => {
-  res.send('Server is up and running!');
-});
+//app.get('/', (req, res) => {
+//  res.send('Server is up and running!');
+//});
 
 // Start the server
 app.listen(PORT, () => {
