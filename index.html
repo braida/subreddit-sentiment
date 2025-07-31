@@ -180,10 +180,10 @@
               <button class="btn" onclick="alert('Boosted!')">👍</button>
               <button class="btn" onclick="alert('Flagged!')">🚩</button>
             </td>
-            <td><button class="btn" onclick="toggleDetails('${post.details}')">Details</button></td>
+            <td><button class="btn" onclick="toggleDetails('${post.selftext}')">Details</button></td>
           `;
 
-          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.details} || 'No content available.'}</td>`;
+          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.selftext} || 'No content available.'}</td>`;
 
           sentimentTableBody.appendChild(row);
           sentimentTableBody.appendChild(details);
