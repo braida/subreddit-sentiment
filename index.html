@@ -188,7 +188,7 @@
 
         const sorted = Object.entries(subredditStats).sort(([, a], [, b]) => b.count - a.count);
         sorted.slice(0, 10).forEach(([name, stats]) => {
-          const avg = stats.totalPolarity / stats.count;
+          const avg = stats.totalconfidence / stats.count;
           const row = document.createElement("tr");
           row.innerHTML = `
             <td><a href="https://www.reddit.com/r/${name}" target="_blank">${name}</a></td>
@@ -211,16 +211,16 @@
     
     function plotLineGraph(dateStats) {
       const dates = Object.keys(dateStats).sort();
-      const avgPolarity = dates.map(d => dateStats[d].totalPolarity / dateStats[d].count);
+      const avgconfidence = dates.map(d => dateStats[d].totalconfidence / dateStats[d].count);
 
       Plotly.newPlot('lineGraph', [{
         x: dates,
-        y: avgPolarity,
+        y: avgconfidence,
         mode: 'lines+markers',
         line: { color: 'mediumseagreen' }
       }], {
         xaxis: { title: 'Date' },
-        yaxis: { title: 'Avg Polarity', range: [-1, 1] },
+        yaxis: { title: 'Avg Confidence', range: [-1, 1] },
         margin: { t: 50 }
       });
     }
