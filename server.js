@@ -208,7 +208,7 @@ app.post('/api/data', async (req, res) => {
     const accessToken = await getRedditAccessToken();
 
     for (const subreddit of popularSubreddits) {
-      const url = `https://oauth.reddit.com/r/${subreddit}/new?limit=30`;
+      const url = `https://oauth.reddit.com/r/${subreddit}/new?limit=15`;
 
       const redditRes = await fetch(url, {
         headers: {
