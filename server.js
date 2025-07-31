@@ -26,14 +26,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import Parser from 'rss-parser';
 import OpenAI from 'openai';
-//import express from 'express';
 
-//import cors from 'cors';
-
-
-//const OpenAI = require('openai');
-
-//const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -42,8 +35,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
-app.use(express.static(__dirname));
+
 app.use(cors({ origin: '*' }));
+app.get('/', (req, res) => {
+  res.json({ message: 'hello redditors' });
+});
+
+app.use(express.static(__dirname));
+//app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // RSS Parser setup
 const parser = new Parser({
@@ -389,9 +391,9 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+
+
+
 
 //app.listen(PORT, () => {
 //  console.log(`✅ Server running at http://localhost:${PORT}`);
