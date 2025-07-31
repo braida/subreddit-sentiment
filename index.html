@@ -160,6 +160,8 @@
         posts.slice(0, 50).forEach((post, i) => {
           const row = document.createElement("tr");
           const details = document.createElement("tr");
+          //const description = post.selftext?.substring(0, 150) || 'No description.';
+          //const image = post.preview?.images?.[0]?.source?.url?.replace(/&amp;/g, '&');
           const postId = `post-${post.id}`;
 
           row.setAttribute('data-post-id', postId);
@@ -170,7 +172,7 @@
           row.innerHTML = `
             <td>${i + 1}</td>
             <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
-            <td><a href="https://www.reddit.com${post.permalink}" target="_blank">${post.title}</a>
+            <td>${post.title}</a>
             <td>${Number(post.sentimentScore).toFixed(2) || 'N/A'}</td>
             <td>${post.emotion}</td>
             <td>${post.date}</td>
@@ -178,10 +180,10 @@
               <button class="btn" onclick="alert('Boosted!')">👍</button>
               <button class="btn" onclick="alert('Flagged!')">🚩</button>
             </td>
-            <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
+            <td><button class="btn" onclick="toggleDetails('${postText}')">Details</button></td>
           `;
 
-          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.details || 'No content available.'}</td>`;
+          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.details} || 'No content available.'}</td>`;
 
           sentimentTableBody.appendChild(row);
           sentimentTableBody.appendChild(details);
