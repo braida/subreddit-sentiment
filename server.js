@@ -237,12 +237,12 @@ app.post('/api/data', async (req, res) => {
 
         posts.push({ subreddit, title, sentimentScore: score, emotion, date: dateStr, postText: selftext, id });
 
-        subredditStats[subreddit] = subredditStats[subreddit] || { count: 0, totalconfidence: 0 };
+        subredditStats[subreddit] = subredditStats[subreddit] || { count: 0, sentimentScore: 0 };
         subredditStats[subreddit].count++;
-        subredditStats[subreddit].totalconfidence += score;
+        subredditStats[subreddit].sentimentScore += score;
 
-        dateStats[dateStr] = dateStats[dateStr] || { totalconfidence: 0, count: 0 };
-        dateStats[dateStr].totalconfidence += score;
+        dateStats[dateStr] = dateStats[dateStr] || { sentimentScore: 0, count: 0 };
+        dateStats[dateStr].sentimentScore += score;
         dateStats[dateStr].count++;
       }
     }
