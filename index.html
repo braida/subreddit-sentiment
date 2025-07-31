@@ -29,7 +29,7 @@
     <div class="section-header">Subreddit Ranking (Top 10 Scored Subreddits)</div>
     <table id="subredditTable">
       <thead>
-        <tr><th>Subreddit</th><th>Comments</th><th>Avg Score</th></tr>
+        <tr><th>Subreddit</th><th>Comments</th><th>Avg Score</th><th>Score Confidence Rate</th></tr>
       </thead>
       <tbody id="subredditTableBody"></tbody>
     </table>
@@ -148,7 +148,7 @@
 
         const { posts, subredditStats, dateStats } = await response.json();
        
-        generateWordCloud(posts);
+        // generateWordCloud(posts);
         
         const subredditTableBody = document.getElementById("subredditTableBody");
         const sentimentTableBody = document.getElementById("sentimentTableBody");
@@ -224,10 +224,15 @@
         margin: { t: 50 }
       });
     }
+ 
+    
+    /*
     function generateWordCloud(posts) {
   const wordCounts = {};
 
-  // Basic word frequency count
+
+       
+    // Basic word frequency count
   posts.forEach(post => {
     const text = (post.title + ' ' + (post.postText || '')).toLowerCase();
     const words = text.match(/\b\w{4,}\b/g); // only words with 4+ letters
@@ -255,6 +260,7 @@
     backgroundColor: '#f9f9f9'
   });
 }
+/*
 
   </script>
 </body>
