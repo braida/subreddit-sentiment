@@ -407,11 +407,12 @@ app.post('/api/data', async (req, res) => {
         if (postDate < start || postDate > end) return;
 
         const content = `${title} ${selftext}`;
-        const { score } = getSentimentScore(content);
+        //const { score } = getSentimentScore(content);
+       // const { confidence } = getSentimentScore(content);
         const emotion = score > 0 ? 'UpBeat' : score < 0 ? 'Downbeat' : 'Neutral';
         const dateStr = postDate.toISOString().split('T')[0];
 
-        posts.push({ subreddit, title, sentimentScore: score, emotion, date: dateStr, postText: selftext, id });
+        posts.push({ subreddit, title, sentimentScore: score,confidence: confidence, emotion, date: dateStr, postText: selftext, id });
 
         if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
         subredditStats[subreddit].count++;
