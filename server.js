@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); 
+app.use(express.static(__dirname)); 
 
 // parser
 const parser = new Parser({
@@ -256,7 +256,7 @@ app.post('/api/data', async (req, res) => {
 
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ---------------------- Start  ----------------------
