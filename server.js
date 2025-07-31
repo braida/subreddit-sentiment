@@ -24,7 +24,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 //import cors from 'cors';
 import Parser from 'rss-parser';
-import OpenAI from 'openai';
+//import OpenAI from 'openai';
+const OpenAI = require('openai');
 
 const cors = require('cors');
 const app = express();
