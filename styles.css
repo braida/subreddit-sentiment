@@ -14,7 +14,7 @@ h1 {
 
 .section {
   margin-top: 30px;
-  padding: 20px;
+  
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
@@ -79,11 +79,6 @@ th {
 
 .uplifting {
   background-color: #f4f7fa;
-}
-
-td a,
-td {
-  word-break: break-word;
 }
 
 #loading {
