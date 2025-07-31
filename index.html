@@ -155,7 +155,8 @@
         subredditTableBody.innerHTML = '';
         sentimentTableBody.innerHTML = '';
 
-        posts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+        //posts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+        posts.sort((a, b) => b.dateStr - a.dateStr);
         posts.slice(0, 50).forEach((post, i) => {
           const row = document.createElement("tr");
           const details = document.createElement("tr");
