@@ -1,6 +1,6 @@
 
 {
-  "name": "bbc-sentiment-api",
+  "name": "reddit-subpost-api",
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",
