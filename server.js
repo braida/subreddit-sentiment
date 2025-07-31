@@ -19,19 +19,19 @@ app.use(bodyParser.json());
 
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-
 
 import dotenv from 'dotenv';
 dotenv.config();
-
-//import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-//import cors from 'cors';
 import Parser from 'rss-parser';
-//import OpenAI from 'openai';
-const OpenAI = require('openai');
+import OpenAI from 'openai';
+//import express from 'express';
+
+//import cors from 'cors';
+
+
+//const OpenAI = require('openai');
 
 //const cors = require('cors');
 const app = express();
