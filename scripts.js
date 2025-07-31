@@ -95,7 +95,8 @@
     document.getElementById("loading").style.display = 'block';
     const subredditStats = {};
     const dateStats = {};
-    const upliftingPosts = [];
+   // const upliftingPosts = [];
+    const recentPosts = [];
 
     const subredditTableBody = document.getElementById("subredditTableBody");
     const sentimentTableBody = document.getElementById("sentimentTableBody");
@@ -118,15 +119,17 @@
           const dateStr = postDate.toISOString().split('T')[0];
 
           if (sentimentScore > 0) {
-            upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
+            //upliftingPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
+            recentPosts.push({ subreddit, title, sentimentScore, emotion, date: dateStr, postText: selftext, id });
+
           }
 
-          if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
+          if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, sentimentScore: 0 };
           subredditStats[subreddit].count++;
-          subredditStats[subreddit].totalPolarity += sentimentScore;
+          subredditStats[subreddit].sentimentScore += sentimentScore;
 
-          if (!dateStats[dateStr]) dateStats[dateStr] = { totalPolarity: 0, count: 0 };
-          dateStats[dateStr].totalPolarity += sentimentScore;
+          if (!dateStats[dateStr]) dateStats[dateStr] = { sentimentScore: 0, count: 0 };
+          dateStats[dateStr].sentimentScore += sentimentScore;
           dateStats[dateStr].count++;
         });
       } catch (e) {
@@ -134,10 +137,14 @@
       }
     }
 
-    upliftingPosts.sort((a, b) => b.sentimentScore - a.sentimentScore);
-    upliftingPosts.slice(0, 30).forEach((post, i) => {
+   // upliftingPosts.sort((a, b) => b.sentimentScore - a.sentimentScore);
+    recentPosts.sort((a, b) => b.dateStr - a.dateStr);
+    
+    recentPosts.slice(0, 30).forEach((post, i) => {
       const row = document.createElement("tr");
-      row.classList.add('uplifting');
+      //row.classList.add('uplifting');
+      row.classList.add('recentposts');
+      
       row.innerHTML = `
         <td>${i + 1}</td>
         <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
@@ -161,10 +168,10 @@
     });
 
     const sorted = Object.entries(subredditStats).sort(([, a], [, b]) =>
-      (b.totalPolarity / b.count) - (a.totalPolarity / a.count)
+      (b.sentimentScore / b.count) - (a.sentimentScore / a.count)
     );
     sorted.slice(0, 10).forEach(([name, stats]) => {
-      const avg = stats.totalPolarity / stats.count;
+      const avg = stats.sentimentScore / stats.count;
       const row = document.createElement("tr");
       row.innerHTML = `<td><a href="https://www.reddit.com/r/${name}" target="_blank">${name}</a></td>
                        <td>${stats.count}</td><td>${avg.toFixed(2)}</td>`;
@@ -177,12 +184,12 @@
 
   function plotLineGraph(dateStats) {
     const dates = Object.keys(dateStats).sort();
-    const avgPolarity = dates.map(d => dateStats[d].totalPolarity / dateStats[d].count);
+    const avgScore = dates.map(d => dateStats[d].sentimentScore / dateStats[d].count);
     Plotly.newPlot('lineGraph', [{
-      x: dates, y: avgPolarity, mode: 'lines+markers',
+      x: dates, y: avgScore, mode: 'lines+markers',
       line: { color: 'mediumseagreen' }
     }], {
-      xaxis: { title: 'Date' }, yaxis: { title: 'Avg Polarity', range: [-1, 1] },
+      xaxis: { title: 'Date' }, yaxis: { title: 'Avg Score', range: [-1, 1] },
       margin: { t: 30 }
     });
   }
