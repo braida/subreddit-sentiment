@@ -170,7 +170,7 @@
           row.innerHTML = `
             <td>${i + 1}</td>
             <td><a href="https://www.reddit.com/r/${post.subreddit}" target="_blank">${post.subreddit}</a></td>
-            <td>${post.title}</td>
+            <td><a href="https://www.reddit.com${post.permalink}" target="_blank">${post.title}</a>
             <td>${Number(post.sentimentScore).toFixed(2) || 'N/A'}</td>
             <td>${post.emotion}</td>
             <td>${post.date}</td>
@@ -181,7 +181,7 @@
             <td><button class="btn" onclick="toggleDetails('${postId}')">Details</button></td>
           `;
 
-          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.postText || 'No content available.'}</td>`;
+          details.innerHTML = `<td colspan="8"><strong>Post Text:</strong> ${post.subreddit || 'No content available.'}</td>`;
 
           sentimentTableBody.appendChild(row);
           sentimentTableBody.appendChild(details);
