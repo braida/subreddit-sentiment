@@ -204,58 +204,7 @@ function getSentimentScore(text) {
 */
 
 // here 
-function localSentimentScore(text) {
-  let positiveCount = 0;
-  let negativeCount = 0;
-  let positivePhraseBonus = 0;
-  const lowerText = text.toLowerCase();
 
-  positiveWords.forEach(word => {
-    const regex = new RegExp(`\\b${word}\\b`, 'i');
-    if (regex.test(lowerText)) positiveCount++;
-  });
-
-  negativeWords.forEach(word => {
-    const regex = new RegExp(`\\b${word}\\b`, 'i');
-    if (regex.test(lowerText)) negativeCount++;
-  });
-
-  for (const contrast of contrastWords) {
-    const contrastIndex = lowerText.indexOf(contrast);
-    if (contrastIndex !== -1) {
-      const before = lowerText.slice(0, contrastIndex);
-      for (const word of positiveWords) {
-        if (before.includes(word)) {
-          positiveCount = Math.ceil(positiveCount * CONTRAST_PENALTY_FACTOR);
-          break;
-        }
-      }
-    }
-  }
-
-  let phrasePenalty = 0;
-  for (const phrase of negativePhrases) {
-    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
-    if (regex.test(lowerText)) phrasePenalty += PHRASE_PENALTY_PER_MATCH;
-  }
-
-  for (const phrase of positivePhrases) {
-    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
-    if (regex.test(lowerText)) positivePhraseBonus += PHRASE_BONUS_WEIGHT;
-  }
-
-  const weightedPositives = positiveCount + positivePhraseBonus;
-  const weightedNegatives = (negativeCount * NEGATIVE_WEIGHT) + phrasePenalty;
-  const totalWeighted = weightedPositives + weightedNegatives;
-
-  const score = totalWeighted === 0 ? 0 : (weightedPositives - weightedNegatives) / totalWeighted;
-  const signalStrength = weightedPositives + weightedNegatives;
-  const sentimentCertainty = Math.abs(score);
-  const lengthFactor = Math.min(1, text.length / 200);
-  const confidence = Math.min(1, (signalStrength / 10) * sentimentCertainty * lengthFactor);
-
-  return { score, confidence };
-}
 
 function localSentimentScore(text) {
   let positiveCount = 0;
