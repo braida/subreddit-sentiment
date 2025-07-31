@@ -22,10 +22,11 @@ dotenv.config();
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cors from 'cors';
+//import cors from 'cors';
 import Parser from 'rss-parser';
 import OpenAI from 'openai';
 
+const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
