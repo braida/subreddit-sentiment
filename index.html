@@ -148,7 +148,7 @@
 
         const { posts, subredditStats, dateStats } = await response.json();
        
-        // generateWordCloud(posts);
+         generateWordCloud(posts);
         
         const subredditTableBody = document.getElementById("subredditTableBody");
         const sentimentTableBody = document.getElementById("sentimentTableBody");
@@ -226,7 +226,7 @@
     }
  
     
-    /*
+    
     function generateWordCloud(posts) {
   const wordCounts = {};
 
@@ -260,7 +260,7 @@
     backgroundColor: '#f9f9f9'
   });
 }
-/*
+
 
   </script>
 </body>
