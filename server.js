@@ -1,5 +1,5 @@
 
-import express from 'express';
+/* start
 import path from 'path';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
@@ -13,6 +13,61 @@ const PORT = process.env.PORT || 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
+*/ // end 
+
+// here to 
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
+import Parser from 'rss-parser';
+import OpenAI from 'openai';
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware
+app.use(express.static(__dirname));
+app.use(cors({ origin: '*' }));
+
+// RSS Parser setup
+const parser = new Parser({
+  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; sentiment-bot/1.0)' },
+  timeout: 10000
+});
+
+// OpenAI client setup
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// OpenAI usage cap
+let openaiCallCount = 0;
+const MAX_OPENAI_CALLS = 500;
+
+// Optional: reset cap every hour
+setInterval(() => {
+  openaiCallCount = 0;
+  console.log("🔄 OpenAI call counter reset.");
+}, 60 * 60 * 1000);
+
+// Example: simple route to check server status
+app.get('/', (req, res) => {
+  res.send('Server is up and running!');
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+//here end 
 
 const popularSubreddits = ['news', 'worldnews', 'funny', 'mentalhealth', 'askreddit'];
 
@@ -90,7 +145,7 @@ async function getRedditAccessToken() {
   tokenExpiresAt = Date.now() + data.expires_in * 1000;
   return redditAccessToken;
 }
-
+/*
 // Simple keyword sentiment
 function getSentimentScore(text) {
   
@@ -146,9 +201,174 @@ function getSentimentScore(text) {
 
   return { score}; //, confidence };
 }
+*/
+
+// here 
+function localSentimentScore(text) {
+  let positiveCount = 0;
+  let negativeCount = 0;
+  let positivePhraseBonus = 0;
+  const lowerText = text.toLowerCase();
+
+  positiveWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    if (regex.test(lowerText)) positiveCount++;
+  });
+
+  negativeWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    if (regex.test(lowerText)) negativeCount++;
+  });
+
+  for (const contrast of contrastWords) {
+    const contrastIndex = lowerText.indexOf(contrast);
+    if (contrastIndex !== -1) {
+      const before = lowerText.slice(0, contrastIndex);
+      for (const word of positiveWords) {
+        if (before.includes(word)) {
+          positiveCount = Math.ceil(positiveCount * CONTRAST_PENALTY_FACTOR);
+          break;
+        }
+      }
+    }
+  }
+
+  let phrasePenalty = 0;
+  for (const phrase of negativePhrases) {
+    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
+    if (regex.test(lowerText)) phrasePenalty += PHRASE_PENALTY_PER_MATCH;
+  }
+
+  for (const phrase of positivePhrases) {
+    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
+    if (regex.test(lowerText)) positivePhraseBonus += PHRASE_BONUS_WEIGHT;
+  }
+
+  const weightedPositives = positiveCount + positivePhraseBonus;
+  const weightedNegatives = (negativeCount * NEGATIVE_WEIGHT) + phrasePenalty;
+  const totalWeighted = weightedPositives + weightedNegatives;
+
+  const score = totalWeighted === 0 ? 0 : (weightedPositives - weightedNegatives) / totalWeighted;
+  const signalStrength = weightedPositives + weightedNegatives;
+  const sentimentCertainty = Math.abs(score);
+  const lengthFactor = Math.min(1, text.length / 200);
+  const confidence = Math.min(1, (signalStrength / 10) * sentimentCertainty * lengthFactor);
+
+  return { score, confidence };
+}
+
+function localSentimentScore(text) {
+  let positiveCount = 0;
+  let negativeCount = 0;
+  let positivePhraseBonus = 0;
+  const lowerText = text.toLowerCase();
+
+  positiveWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    if (regex.test(lowerText)) positiveCount++;
+  });
+
+  negativeWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    if (regex.test(lowerText)) negativeCount++;
+  });
+
+  for (const contrast of contrastWords) {
+    const contrastIndex = lowerText.indexOf(contrast);
+    if (contrastIndex !== -1) {
+      const before = lowerText.slice(0, contrastIndex);
+      for (const word of positiveWords) {
+        if (before.includes(word)) {
+          positiveCount = Math.ceil(positiveCount * CONTRAST_PENALTY_FACTOR);
+          break;
+        }
+      }
+    }
+  }
+
+  let phrasePenalty = 0;
+  for (const phrase of negativePhrases) {
+    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
+    if (regex.test(lowerText)) phrasePenalty += PHRASE_PENALTY_PER_MATCH;
+  }
+
+  for (const phrase of positivePhrases) {
+    const regex = new RegExp(`\\b${phrase.toLowerCase()}\\b`, 'i');
+    if (regex.test(lowerText)) positivePhraseBonus += PHRASE_BONUS_WEIGHT;
+  }
+
+  const weightedPositives = positiveCount + positivePhraseBonus;
+  const weightedNegatives = (negativeCount * NEGATIVE_WEIGHT) + phrasePenalty;
+  const totalWeighted = weightedPositives + weightedNegatives;
+
+  const score = totalWeighted === 0 ? 0 : (weightedPositives - weightedNegatives) / totalWeighted;
+  const signalStrength = weightedPositives + weightedNegatives;
+  const sentimentCertainty = Math.abs(score);
+  const lengthFactor = Math.min(1, text.length / 200);
+  const confidence = Math.min(1, (signalStrength / 10) * sentimentCertainty * lengthFactor);
+
+  return { score, confidence };
+}
+
+async function getSentimentScore(text) {
+  if (text.length < 20 || openaiCallCount >= MAX_OPENAI_CALLS) {
+    // 🔁 Fallback: use local keyword scoring
+    return localSentimentScore(text);
+  }
+
+  try {
+    openaiCallCount++;
+    console.log(` OpenAI scoring (call #${openaiCallCount})`);
+
+    const aiResponse = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      temperature: 0.3,
+      messages: [
+  {
+    role: "system",
+    content: `
+You are a sentiment analysis API text posts. Focus only on the language’s emotional charge to rate the emotional tone of a text and sentence, not its correctness, or political alignment.
+
+Use this scale:
+-1 = very negative emotional tone  
+  0 = neutral (factual, objective, or diplomatic tone)  
++1 = very positive emotional tone
+
+Do not assign negative scores just because a topic is controversial.Focus only on the text to rate the emotional tone and not its correctness, or political alignment.
+
+Respond with a single valid JSON object:
+{ "score": number, "confidence": number }`
+  },
+  {
+    role: "user",
+    content: text
+  }
+]
+
+    });
+
+    const parsed = JSON.parse(aiResponse.choices[0].message.content);
+    return {
+      score: parseFloat(parsed.score),
+      confidence: parseFloat(parsed.confidence)
+    };
+  
+     const local = localSentimentScore(text);
+     const ai = await getSentimentScore(text);
+     console.log("Local:", local);
+   console.log("AI:", ai);
+
+  } catch (err) {
+    console.error("❌ OpenAI scoring failed:", err.message);
+    // Fallback to local if AI fails
+    return localSentimentScore(text);
+  }
+}
+
+// here end
 
 
-// API route to get sentiment data
+// reddit API route to get sentiment data
 app.post('/api/data', async (req, res) => {
   const { startDate, endDate } = req.body;
   const start = new Date(startDate);
@@ -218,3 +438,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
