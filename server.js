@@ -364,19 +364,19 @@ app.post('/api/data', async (req, res) => {
         if (postDate < start || postDate > end) return;
 
         const content = `${title} ${selftext}`;
-        //const { score } = getSentimentScore(content);
-       // const { confidence } = getSentimentScore(content);
+        const { score } = getSentimentScore(content);
+        //const { confidence } = getSentimentScore(content);
         const emotion = score > 0 ? 'UpBeat' : score < 0 ? 'Downbeat' : 'Neutral';
         const dateStr = postDate.toISOString().split('T')[0];
 
-        posts.push({ subreddit, title, sentimentScore: score,confidence: confidence, emotion, date: dateStr, postText: selftext, id });
+        posts.push({ subreddit, title, sentimentScore: score, emotion, date: dateStr, postText: selftext, id });
 
-        if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalPolarity: 0 };
+        if (!subredditStats[subreddit]) subredditStats[subreddit] = { count: 0, totalconfidence: 0 };
         subredditStats[subreddit].count++;
-        subredditStats[subreddit].totalPolarity += score;
+        subredditStats[subreddit].totalconfidence += score;
 
-        if (!dateStats[dateStr]) dateStats[dateStr] = { totalPolarity: 0, count: 0 };
-        dateStats[dateStr].totalPolarity += score;
+        if (!dateStats[dateStr]) dateStats[dateStr] = { totalconfidence: 0, count: 0 };
+        dateStats[dateStr].totalconfidence += score;
         dateStats[dateStr].count++;
       });
     }
