@@ -235,7 +235,7 @@ app.post('/api/data', async (req, res) => {
         const emotion = score > 0 ? 'UpBeat' : score < 0 ? 'Downbeat' : 'Neutral';
         const dateStr = postDate.toISOString().split('T')[0];
 
-        posts.push({ subreddit, title, sentimentScore: score, emotion, date: dateStr, postText: selftext, id });
+        posts.push({ subreddit, title, sentimentScore: score, emotion, date: dateStr, selftext, id });
 
         subredditStats[subreddit] = subredditStats[subreddit] || { count: 0, sentimentScore: 0 };
         subredditStats[subreddit].count++;
