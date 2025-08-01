@@ -140,7 +140,19 @@ async function getSentimentScore(text) {
       messages: [
         {
           role: "system",
-          content: `Rate emotional tone only (-1 to +1) with this format: { "score": number, "confidence": number }`
+          content: `You are a bilingual text analysis assistant for both English and French text. Given any input text, rate only its emotional tone on a scale from -1 to +1:
+-1 = extremely negative emotional tone 
+0 = neutral, objective and/or impartial 
++1 = extremely positive tone 
+
+Return only a JSON object in this format:
+{ "score": number, "confidence": number }
+
+- "score" is your assessment of the emotional tone.
+- "confidence" is how certain you are about that score (from 0 to 1).
+
+Do not explain or comment. Focus only on emotional tone of the sentence, not content,not correctness nor political views.`
+
         },
         {
           role: "user",
