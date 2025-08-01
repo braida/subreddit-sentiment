@@ -140,7 +140,36 @@ async function getSentimentScore(text) {
       messages: [
         {
           role: "system",
-          content: `You are a bilingual text analysis assistant for both English and French text. Given any input text, rate only its emotional tone on a scale from -1 to +1:
+          content: `You are a bilingual media analysis assistant. Your task is to detect **bias framing** in news-related text in either English or French.
+
+Bias framing refers to emotionally or ideologically loaded language that shapes how events or people are perceived. You are not judging truth or political alignment — only whether the **language framing** introduces bias. return stict json between 0 and 1 with 0 no bias detected at all 1 biased detected
+
+Evaluate the input and return a JSON object with this format:
+
+{
+  "score": number,
+  "framing_type": string | null,      // e.g., "emotional language", "loaded terms", "one-sided framing", etc.
+  "examples": [string],               // short phrases or quotes from the text that indicate bias framing
+  "confidence": number                // 0 to 1, how confident you are in this judgment
+}
+
+---
+
+Vous êtes un assistant bilingue d’analyse médiatique. Votre tâche est de détecter la **présence d’un cadrage biaisé** dans un texte d’actualité en anglais ou en français.
+
+Le cadrage biaisé désigne un langage émotionnellement ou idéologiquement chargé qui influence la perception des événements ou des personnes. Vous ne jugez pas la véracité ni l’orientation politique — seulement si le **langage introduit un biais de cadrage** avec un score de 0 a 1 ou 0 est pas de biai détecte et 1 fort biais détecte
+
+Évaluez le texte et retournez un objet JSON avec ce format :
+
+{
+  "score": number,
+  "framing_type": string | null,      // ex. : "langage émotionnel", "termes connotés", "cadrage unilatéral", etc.
+  "examples": [string],               // extraits courts du texte qui montrent ce cadrage biaisé
+  "confidence": number                // de 0 à 1, niveau de confiance dans cette évaluation
+}`
+
+ 
+  /*        content: `You are a bilingual text analysis assistant for both English and French text. Given any input text, rate only its emotional tone on a scale from -1 to +1:
 -1 = extremely negative emotional tone 
 0 = neutral, objective and/or impartial 
 +1 = extremely positive tone 
@@ -152,7 +181,7 @@ Return only a JSON object in this format:
 - "confidence" is how certain you are about that score (from 0 to 1).
 
 Do not explain or comment. Focus only on emotional tone of the sentence, not content,not correctness nor political views.`
-
+*/
         },
         {
           role: "user",
